@@ -13,13 +13,13 @@ import (
 )
 
 type config struct {
-	address  string
-	grpc     int
-	http     int
-	timeout  int
-	zoneID   string
-	services string
-	interval int
+	addresses string
+	grpc      int
+	http      int
+	timeout   int
+	zoneID    string
+	services  string
+	interval  int
 }
 
 func main() {
@@ -30,16 +30,16 @@ func main() {
 		Name: "syncer",
 	})
 
-	flag.StringVar(&conf.address, "consul-address", "127.0.0.1", "address list of consul server")
+	flag.StringVar(&conf.addresses, "consul-addresses", "", "go-netaddrs formated consul servers defintion [REQUIRED]")
 	flag.IntVar(&conf.grpc, "consul-grpc-port", 8502, "grpc port of consul server")
 	flag.IntVar(&conf.http, "consul-http-port", 8500, "http port of consul server")
 	flag.IntVar(&conf.timeout, "consul-http-timeout", 5, "http timeout for connecting to consul server")
-	flag.StringVar(&conf.services, "consul-services", "", "comma serated consul services to synchronize [REQUIRED]")
+	flag.StringVar(&conf.services, "consul-services", "", "comma separated consul services to synchronize [REQUIRED]")
 	flag.StringVar(&conf.zoneID, "dns-zone-id", "", "route53 zone-ID to synchronize to [REQUIRED]")
 	flag.IntVar(&conf.interval, "refresh-interval", 20, "interval between sync")
 	flag.Parse()
 
-	if conf.zoneID == "" || conf.services == "" {
+	if conf.addresses == "" && conf.services == "" || conf.zoneID == "" {
 		flag.Usage()
 		log.Error("required parameters missing")
 		return
@@ -48,7 +48,7 @@ func main() {
 	services := strings.Split(conf.services, ",")
 
 	cm, err := consul.NewConsulManager(
-		conf.address,
+		conf.addresses,
 		consul.WithGRPCPort(conf.grpc),
 		consul.WithHTTPPort(conf.http),
 		consul.WithTimeout(conf.timeout),
@@ -74,7 +74,6 @@ func main() {
 		for _, service := range services {
 
 			log.Info("sync fired", "service", service)
-			//log.Info("sync fired", "time", hclog.Fmt("%s", t))
 
 			endpoints, err := cm.GetServiceEndpoints(service)
 			if err != nil {

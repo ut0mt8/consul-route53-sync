@@ -43,7 +43,7 @@ type ConsulManager struct {
 	watcher *discovery.Watcher
 }
 
-func NewConsulManager(address string, options ...ConsulManagerOption) (cm *ConsulManager, err error) {
+func NewConsulManager(addresses string, options ...ConsulManagerOption) (cm *ConsulManager, err error) {
 	// defaults options
 	cmo := &ConsulManagerOptions{
 		grpcPort: 8502,
@@ -58,7 +58,7 @@ func NewConsulManager(address string, options ...ConsulManagerOption) (cm *Consu
 	watcher, err := discovery.NewWatcher(
 		context.Background(),
 		discovery.Config{
-			Addresses: address,
+			Addresses: addresses,
 			GRPCPort:  cmo.grpcPort,
 		},
 		hclog.New(&hclog.LoggerOptions{
