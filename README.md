@@ -7,7 +7,7 @@ Usage of ./syncer:
   -consul-http-port=8500: http port of consul server
   -consul-http-timeout=5: http timeout for connecting to consul server
   -consul-services="": comma separated consul services to synchronize [REQUIRED]
-  -dns-zone-id="": route53 zone-ID to synchronize to [REQUIRED]
+  -dns-zone-ids="": comma separated route53 zone-ID to synchronize to [REQUIRED]
   -refresh-interval=20: interval between sync
 ```
 
